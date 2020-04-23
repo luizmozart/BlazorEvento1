@@ -1,0 +1,75 @@
+﻿@page "/inscricao/{participanteID}"
+
+<h3>Inscrição</h3>
+<br />
+<br />
+
+
+<label>Nome :</label>
+<p><input @bind="participante.Nome" /></p>
+
+@if (eventoparticipante != null)
+{
+    <label>Total de Inscritos: @totinscrito</label>
+
+    <br />
+    <label>Total de Vagas : @Totvagas</label>
+
+    <br />
+    <br />
+
+    <button type="submit" class="btn btn-primary" >Confirme sua Inscrição</button>
+}
+else
+{
+    <label>Você já está inscrito nesse evento : @evento.Nome</label>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public string participanteID { get; set; }
+
+    Int32 totinscrito = 0;
+    Int32 Totvagas = 0;
+    Int32 idParticipante = 0;
+
+    Participante participante = new Participante();
+    ParticipanteLogica participantelogica = new ParticipanteLogica();
+    Evento evento = new Evento();
+    EventoLogica eventoLogica = new EventoLogica();
+    EventoParticipante eventoparticipante = new EventoParticipante();
+    EventoParticipanteLogica eventoparticipantelogica = new EventoParticipanteLogica();
+    List<EventoParticipante> participanteList = new List<EventoParticipante>();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        participante = await participantelogica.Get(Convert.ToInt32(participanteID));
+        evento = await eventoLogica.GetMaior();
+        eventoparticipante = await eventoparticipantelogica.Get(Convert.ToInt32(participanteID));
+        participanteList = await eventoparticipantelogica.ListParticipantedoEvento();
+        totinscrito = participanteList.Count();
+        StateHasChanged();
+        Totvagas = evento.QuantidadeInscritos - totinscrito;
+
+    }
+
+    async Task Gravar()
+    {
+        //evento = await eventoLogica.GetMaior();
+
+        eventoparticipante.IdEvento = evento.Id;
+        eventoparticipante.IdParticipante = participante.Id;
+
+        await eventoparticipantelogica.Create(eventoparticipante);
+
+    }
+
+
+
+
+}

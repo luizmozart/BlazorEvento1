@@ -1,0 +1,104 @@
+﻿@page "/InclusaoParticipante"
+
+<h3>Inclusão Participante</h3>
+<hr />
+
+@if (_sucesso)
+{
+    <div class="text-success">
+        Cadastro realizado com Sucesso !
+    </div>
+}
+@if (_cpf == false)
+{
+    <div class="text-danger">
+        CPF informado é inválido !
+    </div>
+}
+@if (_cpfexistente == false)
+{
+    <div class="text-danger">
+        CPF informado já cadastrado !
+    </div>
+}
+
+<EditForm Model="participante" OnValidSubmit="FormSubmit">
+    <p>
+        <label>C.P.F:</label>
+        <InputText @bind-Value="participante.Cpf"></InputText>
+    </p>
+    <p>
+        <label>Nome:</label>
+        <InputText @bind-Value="participante.Nome"></InputText>
+    </p>
+    <p>
+        <label>E-Mail:</label>
+        <InputText @bind-Value="participante.Email"></InputText>
+    </p>
+    <p>
+        <label>Endereço:</label>
+        <InputText @bind-Value="participante.Endereco"></InputText>
+    </p>
+    <p>
+        <label>Bairro:</label>
+        <InputText @bind-Value="participante.Bairro"></InputText>
+    </p>
+    <p>
+        <label>CEP:</label>
+        <InputText @bind-Value="participante.Cep"></InputText>
+    </p>
+    <p>
+        <label>Telefone:</label>
+        <InputText @bind-Value="participante.Telefone"></InputText>
+    </p>
+    <p>
+        <label>Celular:</label>
+        <InputText @bind-Value="participante.Whatsapp"></InputText>
+    </p>
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <button type="submit" class="btn btn-primary">Gravar</button>
+</EditForm>
+
+@code {
+
+    Participante participante = new Participante();
+    Participante participantenovo = new Participante();
+    ParticipanteLogica participantelogica = new ParticipanteLogica();
+    Evento evento = new Evento();
+    EventoLogica eventoLogica = new EventoLogica();
+    EventoParticipanteLogica eventoparticipantelogica = new EventoParticipanteLogica();
+    EventoParticipante eventoparticipante = new EventoParticipante();
+
+    string nome = "";
+    bool _cpfexistente = true;
+    bool _cpf = true;
+    bool _sucesso = false;
+
+    private async Task FormSubmit()
+    {
+        _cpf = participantelogica.ValidaCPF(participante.Cpf);
+        if (_cpf == false)
+        {
+            return;
+        }
+
+        participantenovo = await participantelogica.GetBycpf(participante.Cpf);
+        if (participantenovo != null)
+        {
+            _cpfexistente = false;
+            return;
+        }
+
+
+        await participantelogica.Create(participante);
+        
+
+
+        _sucesso = true;
+        StateHasChanged();
+    }
+
+}

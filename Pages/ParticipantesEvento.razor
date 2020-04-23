@@ -1,0 +1,49 @@
+﻿@page "/participanteevento"
+
+<h3>Participantes Evento</h3>
+
+@if (participanteList.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-borderless ">
+            <thead class="thead-light">
+            <th scope="col">Nome</th>
+            <th scope="col">Email</th>
+            <th scope="col"></th>
+            </thead>
+            <tbody>
+                @foreach (var participante in participanteList)
+                {
+                    <tr>
+                        <td>@participante.IdParticipanteNavigation.Nome</td>
+                        <td>@participante.IdParticipanteNavigation.Email</td>
+                        <td>
+                            <a href="#" class="btn btn-dark">Editar</a>
+                            <a href="#" class="btn btn-danger">Deletar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row">Total de Inscritos</th>
+                    <td>@participanteList.Count()</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+
+
+
+@code {
+
+    List<EventoParticipante> participanteList = new List<EventoParticipante>();
+    EventoParticipanteLogica participanteLogic = new EventoParticipanteLogica();
+
+    protected override async Task OnInitializedAsync()
+    {
+        participanteList = await participanteLogic.ListParticipantedoEvento();
+    }
+
+}

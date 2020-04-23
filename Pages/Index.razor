@@ -1,0 +1,62 @@
+﻿@page "/"
+
+<h1>Bem Vindo ao Evento </h1>
+
+<p>Informe o seu C.P.F : <input type="text" @bind="participante.Cpf" /></p>
+
+<button type="submit" class="btn btn-primary" @onclick="@(e => GetParticipantebycpf(participante.Cpf))">Pesquisar</button>
+
+<a href="/InclusaoParticipante" class="btn btn-info">Faça seu Cadastro</a>
+<br />
+<br />
+@if (participante.Nome != null)
+{
+    <p>Participante cadastrado</p>
+    <p>Clique no botão abaixo para se inscrever no evento : <b>@evento.Nome</b> </p> 
+    <br />
+    <table class="table table-responsive">
+        <thead class="thead-light">
+        <th>Nome</th>
+        <th>E-Mail</th>
+        <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@participante.Nome</td>
+                <td>@participante.Email</td>
+                <td>
+                    <a href="/Inscricao/@participante.Id" class="btn btn-dark" >Confirmar Inscrição</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+
+@code{
+
+    List<Participante> listaParticipantes = new List<Participante>();
+    ParticipanteLogica participantelogica = new ParticipanteLogica();
+    EventoLogica eventoLogica = new EventoLogica();
+    Participante participante = new Participante();
+    Evento evento = new Evento();
+
+    async Task GetParticipantebycpf(string cpf)
+    {
+        participante = await participantelogica.GetBycpf(cpf);
+        evento = await eventoLogica.GetMaior();
+        StateHasChanged();
+    }
+
+    async Task GetEvento()
+    {
+        evento = await eventoLogica.GetMaior();
+    }
+
+    async Task GetParticipante(int id)
+    {
+        participante = await participantelogica.Get(id);
+    }
+
+
+}
